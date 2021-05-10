@@ -17,12 +17,24 @@ public class UsuarioService {
 	 @Autowired
 	 private UsuarioRepository repository;
 	 
-	 public Usuario CadastrarUsuario(Usuario usuario) {
+	 public Optional<Usuario> CadastrarUsuario(Usuario usuario) {
+		 
+		 if (usuario.getIdade() >= 18) {
+			 usuario.setMaiorIdade(true);
+		 }
+		 else if (usuario.getIdade() <18) {
+			 usuario.setMaiorIdade(false);
+		 }
+		 
+		 if(repository.findByUsuario(usuario.getUsuario()).isPresent())
+				return null;
+		 
 		 BCryptPasswordEncoder enconder = new BCryptPasswordEncoder();
+		 
 		 String senhaEnconder = enconder.encode(usuario.getSenha());
 		 usuario.setSenha(senhaEnconder);
 		 
-		 return repository.save(usuario);
+		 return Optional.of(repository.save(usuario));
 	 }
 	 
 	 public Optional<UserLogin> Logar (Optional<UserLogin> user){
